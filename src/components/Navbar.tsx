@@ -34,7 +34,8 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount = 0, onSearch }) => {
     },
     { label: 'About', href: '/about/' },
     { label: 'Blog', href: '/blog/' },
-    { label: 'Contact', href: '/contact/' }
+    { label: 'Contact', href: '/contact/' },
+    { label: 'Tailwind Test', href: '/tailwind-test/' }
   ];
 
   const handleSearch = (e: React.FormEvent) => {

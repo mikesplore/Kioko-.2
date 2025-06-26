@@ -1,24 +1,21 @@
-import './styles/index.css'
-import App from './App'
+import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './styles/index.css';
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom';
+import App from './App';
+import './styles/reset.css'; // Basic CSS test
+import './styles/index.css'; // Import your Tailwind CSS here
 
 
 const rootElement = document.getElementById('root');
-if (rootElement) {
-  ReactDOM.createRoot(document.getElementById('root')!).render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
-  );
 
-  // Or, if you want to use the other import:
-  // createRoot(rootElement).render(
-  //   <StrictMode>
-  //     <App />
-  //   </StrictMode>,
-  // );
+if (rootElement) {
+  ReactDOM.createRoot(rootElement).render(
+    <React.StrictMode>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </React.StrictMode>
+  );
 } else {
   console.error("Root element not found");
 }
