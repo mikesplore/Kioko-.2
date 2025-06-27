@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Define CSS variables */
+:root {
+  --primary-50: #eff6ff;
+  --primary-100: #dbeafe;
+  --primary-600: #2563eb;
+  --primary-700: #1d4ed8;
+  --primary-800: #1e40af;
+  --secondary-600: #4f46e5;
+  --secondary-700: #4338ca;
+  --neutral-50: #f9fafb;
+  --neutral-100: #f3f4f6;
+  --neutral-500: #6b7280;
+  --neutral-600: #4b5563;
+  --neutral-800: #1f2937;
+  --white: #ffffff;
+  --success-600: #059669;
+}
+
+/* Base styles */
 @layer base {
   * {
     transition: 
@@ -118,23 +137,6 @@ button:focus-visible {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-}
-/* Define CSS variables */
-:root {
-  --primary-50: #eff6ff;
-  --primary-100: #dbeafe;
-  --primary-600: #2563eb;
-  --primary-700: #1d4ed8;
-  --primary-800: #1e40af;
-  --secondary-600: #4f46e5;
-  --secondary-700: #4338ca;
-  --neutral-50: #f9fafb;
-  --neutral-100: #f3f4f6;
-  --neutral-500: #6b7280;
-  --neutral-600: #4b5563;
-  --neutral-800: #1f2937;
-  --white: #ffffff;
-  --success-600: #059669;
 }
 
 /* Hero Section */

@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
-import Navbar from './Navbar';
-// Add Footer import if you have a Footer component
+// Removed Navbar import as it's already in App.tsx
 
 interface LayoutProps {
   children: ReactNode;
@@ -9,7 +8,6 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   return (
       <div className="App">
-        <Navbar />
         <main className="main-content">
           {children}
         </main>
