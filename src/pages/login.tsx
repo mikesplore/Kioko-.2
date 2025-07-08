@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface LoginProps {}
 
 const Login: React.FC<LoginProps> = () => {
+  // Get auth context
+  const { login } = useAuth();
+  
   // State management
   const [isActive, setIsActive] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -30,15 +34,14 @@ const Login: React.FC<LoginProps> = () => {
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Replace with actual authentication logic
-      if (username === 'demo' && password === 'password') {
+      // Use auth context login function
+      const success = await login(username, password);
+      
+      if (success) {
         setSuccess('Login successful! Redirecting...');
         setTimeout(() => {
           console.log('Redirecting to dashboard...');
-          // Add your redirect logic here
+          // Add your redirect logic here - could navigate back to shop page
         }, 1500);
       } else {
         setLoginError('Invalid username or password');

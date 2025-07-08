@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { Search, User, ShoppingCart, Menu, X, Plus, ChevronDown } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import Contact from '../pages/contact';
+import Cart from '../pages/Cart';
+import Login from '../pages/login';
 
 interface Product {
   id: string;
@@ -17,6 +21,7 @@ const Navbar: React.FC = () => {
   const [currentPage, setCurrentPage] = useState('shop');
   const [cart, setCart] = useState<{[key: string]: number}>({});
   const [isShopDropdownOpen, setIsShopDropdownOpen] = useState(false);
+  const { isAuthenticated, user, login, logout } = useAuth();
 
   const products: Product[] = [
     {
@@ -99,6 +104,25 @@ const Navbar: React.FC = () => {
     setCart(prev => ({
       ...prev,
       [productId]: (prev[productId] || 0) + 1
+    }));
+  };
+
+  const removeFromCart = (productId: string) => {
+    setCart(prev => {
+      const newCart = { ...prev };
+      delete newCart[productId];
+      return newCart;
+    });
+  };
+
+  const updateCartQuantity = (productId: string, newQuantity: number) => {
+    if (newQuantity <= 0) {
+      removeFromCart(productId);
+      return;
+    }
+    setCart(prev => ({
+      ...prev,
+      [productId]: newQuantity
     }));
   };
 
@@ -294,12 +318,23 @@ const Navbar: React.FC = () => {
               </div>
 
               {/* User Account */}
-              <button className="text-gray-700 hover:text-amber-600 p-2 transition-colors duration-200">
-                <User className="h-5 w-5" />
+              <button 
+                onClick={() => setCurrentPage('login')}
+                className="text-gray-700 hover:text-amber-600 p-2 transition-colors duration-200"
+              >
+                <div className="flex items-center">
+                  <User className="h-5 w-5" />
+                  {isAuthenticated && user && (
+                    <span className="ml-2 text-sm font-medium">{user.name}</span>
+                  )}
+                </div>
               </button>
 
               {/* Shopping Cart */}
-              <button className="relative text-gray-700 hover:text-amber-600 p-2 transition-colors duration-200">
+              <button 
+                onClick={() => setCurrentPage('cart')}
+                className="relative text-gray-700 hover:text-amber-600 p-2 transition-colors duration-200"
+              >
                 <ShoppingCart className="h-5 w-5" />
                 {getTotalCartItems() > 0 && (
                   <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
@@ -353,6 +388,24 @@ const Navbar: React.FC = () => {
                 >
                   Contact
                 </button>
+                <button
+                  onClick={() => {
+                    setCurrentPage('cart');
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-md transition-colors duration-200"
+                >
+                  Cart {getTotalCartItems() > 0 && `(${getTotalCartItems()})`}
+                </button>
+                <button
+                  onClick={() => {
+                    setCurrentPage('login');
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-md transition-colors duration-200"
+                >
+                  {isAuthenticated ? 'Account' : 'Login'}
+                </button>
 
               </div>
             </div>
@@ -384,21 +437,16 @@ const Navbar: React.FC = () => {
             </div>
           </div>
         )}
-        {currentPage === 'contact' && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            {/* Your contact form/component will go here */}
-            <div className="text-center">
-              <h1 className="text-4xl font-bold text-gray-900 mb-8">Contact Us</h1>
-              {/* Replace this placeholder with your actual contact component */}
-              <div className="max-w-3xl mx-auto">
-                <p className="text-lg text-gray-600 mb-8">
-                  Get in touch with our team for any inquiries about our products or services.
-                </p>
-                {/* Insert your contact form component here */}
-              </div>
-            </div>
-          </div>
+        {currentPage === 'contact' && <Contact />}
+        {currentPage === 'cart' && (
+          <Cart 
+            cart={cart} 
+            products={products} 
+            updateQuantity={updateCartQuantity} 
+            removeFromCart={removeFromCart} 
+          />
         )}
+        {currentPage === 'login' && <Login />}
 
       </main>
     </div>
