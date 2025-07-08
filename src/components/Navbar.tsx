@@ -14,7 +14,7 @@ const Navbar: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState('home');
+  const [currentPage, setCurrentPage] = useState('shop');
   const [cart, setCart] = useState<{[key: string]: number}>({});
   const [isShopDropdownOpen, setIsShopDropdownOpen] = useState(false);
 
@@ -194,24 +194,13 @@ const Navbar: React.FC = () => {
           <div className="flex justify-between items-center h-16">
             {/* Logo/Brand */}
             <div className="flex-shrink-0">
-              <button onClick={() => setCurrentPage('home')} className="flex items-center hover:scale-105 transition-transform duration-200">
+              <button onClick={() => setCurrentPage('shop')} className="flex items-center hover:scale-105 transition-transform duration-200">
                 <KiokoLogo />
               </button>
             </div>
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-8">
-              <button
-                onClick={() => setCurrentPage('home')}
-                className={`px-3 py-2 text-sm font-medium transition-colors duration-200 ${
-                  currentPage === 'home'
-                    ? 'text-amber-600 border-b-2 border-amber-600'
-                    : 'text-gray-700 hover:text-amber-600'
-                }`}
-              >
-                Home
-              </button>
-              
               {/* Shop with Dropdown */}
               <div className="relative">
                 <button
@@ -268,6 +257,8 @@ const Navbar: React.FC = () => {
               >
                 Contact
               </button>
+              
+
             </div>
 
             {/* Right side actions */}
@@ -337,15 +328,6 @@ const Navbar: React.FC = () => {
               <div className="px-2 pt-2 pb-3 space-y-1">
                 <button
                   onClick={() => {
-                    setCurrentPage('home');
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-md transition-colors duration-200"
-                >
-                  Home
-                </button>
-                <button
-                  onClick={() => {
                     setCurrentPage('shop');
                     setIsMobileMenuOpen(false);
                   }}
@@ -371,6 +353,7 @@ const Navbar: React.FC = () => {
                 >
                   Contact
                 </button>
+
               </div>
             </div>
           )}
@@ -380,13 +363,6 @@ const Navbar: React.FC = () => {
       {/* Page Content */}
       <main>
         {currentPage === 'shop' && <ShopPage />}
-        {currentPage === 'home' && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-         
-            {/*Add Content */}
-            
-          </div>
-        )}
         {currentPage === 'about' && (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="text-center">
@@ -410,30 +386,20 @@ const Navbar: React.FC = () => {
         )}
         {currentPage === 'contact' && (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            {/* Your contact form/component will go here */}
             <div className="text-center">
               <h1 className="text-4xl font-bold text-gray-900 mb-8">Contact Us</h1>
-              <div className="max-w-3xl mx-auto text-lg text-gray-600 space-y-6">
-                <p>
+              {/* Replace this placeholder with your actual contact component */}
+              <div className="max-w-3xl mx-auto">
+                <p className="text-lg text-gray-600 mb-8">
                   Get in touch with our team for any inquiries about our products or services.
                 </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
-                  <div className="text-center">
-                    <h3 className="text-xl font-semibold text-amber-600 mb-2">Email</h3>
-                    <p>info@kiokoenterprise.com</p>
-                  </div>
-                  <div className="text-center">
-                    <h3 className="text-xl font-semibold text-amber-600 mb-2">Phone</h3>
-                    <p>+1 (555) 123-4567</p>
-                  </div>
-                  <div className="text-center">
-                    <h3 className="text-xl font-semibold text-amber-600 mb-2">Address</h3>
-                    <p>123 Premium Street<br />Nairobi, Kenya</p>
-                  </div>
-                </div>
+                {/* Insert your contact form component here */}
               </div>
             </div>
           </div>
         )}
+
       </main>
     </div>
   );
