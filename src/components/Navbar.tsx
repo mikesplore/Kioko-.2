@@ -127,21 +127,18 @@ const Navbar: React.FC = () => {
 
   const ShopPage = () => (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Welcome component moved from home to shop */}
       <div className="text-center mb-12">
-        <div className="mb-8">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent mb-4">
-            Welcome to Kioko Enterprise
-          </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Your premium destination for fine spirits and beverages. Experience the finest collection of drinks from around the world.
-          </p>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+        <h1 className="text-5xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent mb-4">
+          Welcome to Kioko Enterprise
+        </h1>
+        <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          Your premium destination for fine spirits and beverages. Experience the finest collection of drinks from around the world.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
           <button
             className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-8 py-4 rounded-lg text-lg font-medium hover:from-amber-600 hover:to-orange-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
-            Browse Products
+            Shop Collection
           </button>
           <button
             onClick={() => setCurrentPage('about')}
@@ -153,7 +150,7 @@ const Navbar: React.FC = () => {
       </div>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Premium Drinks Collection</h1>
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">Premium Drinks Collection</h2>
         <p className="text-gray-600">Discover our curated selection of fine spirits and beverages</p>
       </div>
       
@@ -384,19 +381,10 @@ const Navbar: React.FC = () => {
       <main>
         {currentPage === 'shop' && <ShopPage />}
         {currentPage === 'home' && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div className="text-center">
-              <h1 className="text-4xl font-bold text-gray-900 mb-8">Our Featured Products</h1>
-              <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-                Explore our handpicked selection of premium beverages. From rare whiskeys to fine wines, we have something for every taste.
-              </p>
-              <button
-                onClick={() => setCurrentPage('shop')}
-                className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-8 py-4 rounded-lg text-lg font-medium hover:from-amber-600 hover:to-orange-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-              >
-                View All Products
-              </button>
-            </div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+         
+            {/*Add Content */}
+            
           </div>
         )}
         {currentPage === 'about' && (
