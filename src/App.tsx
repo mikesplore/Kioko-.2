@@ -8,6 +8,7 @@ import Contact from './pages/contact';
 import Login from './pages/login';
 import DebugStyles from './components/DebugStyles';
 import TailwindTest from './components/TailwindTest';
+import Shop from './pages/Shop';
 
 import './styles/App.css';
 
@@ -23,7 +24,8 @@ function App() {
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/debug-styles" element={<DebugStyles />} />
-                <Route path="/tailwind-test" element={<TailwindTest />} />
+                <Route path="/tailwind-test" element={<TailwindTest />}
+                 /><Route path="/shop" element={<Shop />} />
                 {/* Add more routes here as you create more pages */}
               </Routes>
             </Layout>
