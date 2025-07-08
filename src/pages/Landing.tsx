@@ -28,7 +28,7 @@ export default function KiokoEnterpriseLandingPage() {
       currentPrice: "2,999/-",
       rating: 4.50,
       discount: false,
-      image: "https://images.unsplash.com/photo-1511918984140-1b0c1c1c1c1c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDF8fHdpbmUlMjBpbWFnZXxlbnwwfHx8fDE2MzY0MjY0Mjg&ixlib=rb-1.2.1&q=80&w=400"
+      image: "https://www.thejefferson.co.nz/wp-content/uploads/2024/03/glass-of-red-wine.jpg"
     },
     {
       name: "Vodka Premium",
@@ -179,7 +179,7 @@ export default function KiokoEnterpriseLandingPage() {
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
             {[
-              { name: "Kioko Wine", count: "200+", image: "https://images.unsplash.com/photo-1511918984140-1b0c1c1c1c1c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDF8fHdpbmUlMjBpbWFnZXxlbnwwfHx8fDE2MzY0MjY0Mjg&ixlib=rb-1.2.1&q=80&w=400" },
+              { name: "Kioko Wine", count: "200+", image: "https://www.thejefferson.co.nz/wp-content/uploads/2024/03/glass-of-red-wine.jpg" },
               { name: "Whiskey", count: "150+", image: "https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=400&h=300&fit=crop" },
               { name: "Beer", count: "80+", image: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=400&h=300&fit=crop" },
               { name: "Vodka", count: "60+", image: "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop" },
