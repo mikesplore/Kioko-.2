@@ -1,35 +1,97 @@
-import React from 'react';
-import { X, Plus, Minus } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Plus, Minus, ChevronDown } from 'lucide-react';
 
-// Define product interface (same as in Navbar)
+// Define size options interface
+interface SizeOption {
+  ml: number;
+  price: number;
+  label: string;
+}
+
+// Updated product interface with size options
 interface Product {
   id: string;
   name: string;
   category: string;
-  price: number;
+  price: number; // base price
   image: string;
   description: string;
+  sizeOptions?: SizeOption[]; // optional size variants
+}
+
+// Updated cart item interface to include selected size
+interface CartItem {
+  productId: string;
+  selectedSize: number; // ML size
+  quantity: number;
 }
 
 interface CartProps {
-  cart: {[key: string]: number};
+  cart: {[key: string]: CartItem[]};
   products: Product[];
-  updateQuantity: (productId: string, newQuantity: number) => void;
-  removeFromCart: (productId: string) => void;
+  updateQuantity: (productId: string, sizeML: number, newQuantity: number) => void;
+  removeFromCart: (productId: string, sizeML: number) => void;
+  updateSize: (productId: string, oldSizeML: number, newSizeML: number) => void;
 }
 
-const Cart: React.FC<CartProps> = ({ cart, products, updateQuantity, removeFromCart }) => {
-  // Filter products that are in the cart and add quantity
-  const cartItems = products.filter(product => cart[product.id] && cart[product.id] > 0)
-    .map(product => ({
-      ...product,
-      quantity: cart[product.id]
-    }));
+const Cart: React.FC<CartProps> = ({ cart, products, updateQuantity, removeFromCart, updateSize }) => {
+  const [openDropdowns, setOpenDropdowns] = useState<{[key: string]: boolean}>({});
 
-  // Calculate subtotal, tax, and total
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  // Helper function to format KES currency
+  const formatKES = (amount: number): string => {
+    return `KES ${amount.toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+
+  // Helper function to get default size options if not provided
+  const getDefaultSizeOptions = (basePrice: number): SizeOption[] => [
+    { ml: 250, price: basePrice * 0.7, label: '250ml' },
+    { ml: 500, price: basePrice, label: '500ml' },
+    { ml: 750, price: basePrice * 1.4, label: '750ml' },
+    { ml: 1000, price: basePrice * 1.8, label: '1L' }
+  ];
+
+  // Flatten cart items with product details
+  const cartItems = Object.entries(cart).flatMap(([productId, items]) => {
+    const product = products.find(p => p.id === productId);
+    if (!product) return [];
+    
+    const sizeOptions = product.sizeOptions || getDefaultSizeOptions(product.price);
+    
+    return items.map(item => {
+      const selectedSizeOption = sizeOptions.find(size => size.ml === item.selectedSize);
+      return {
+        ...product,
+        ...item,
+        selectedSizeOption: selectedSizeOption || sizeOptions[0],
+        sizeOptions,
+        cartKey: `${productId}-${item.selectedSize}`
+      };
+    });
+  });
+
+  // Calculate totals
+  const subtotal = cartItems.reduce((sum, item) => {
+    return sum + (item.selectedSizeOption.price * item.quantity);
+  }, 0);
   const tax = subtotal * 0.16; // 16% tax rate
   const total = subtotal + tax;
+
+  // Toggle dropdown
+  const toggleDropdown = (cartKey: string) => {
+    setOpenDropdowns(prev => ({
+      ...prev,
+      [cartKey]: !prev[cartKey]
+    }));
+  };
+
+  // Handle size change
+  const handleSizeChange = (productId: string, oldSizeML: number, newSizeML: number) => {
+    updateSize(productId, oldSizeML, newSizeML);
+    setOpenDropdowns(prev => ({
+      ...prev,
+      [`${productId}-${oldSizeML}`]: false
+    }));
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -68,7 +130,7 @@ const Cart: React.FC<CartProps> = ({ cart, products, updateQuantity, removeFromC
             
             <ul className="divide-y divide-gray-200">
               {cartItems.map((item) => (
-                <li key={item.id} className="p-6 flex flex-col sm:flex-row items-start sm:items-center">
+                <li key={item.cartKey} className="p-6 flex flex-col sm:flex-row items-start sm:items-center">
                   <div className="flex-shrink-0 w-24 h-24 bg-gray-100 rounded-md overflow-hidden mr-6 mb-4 sm:mb-0">
                     <img 
                       src={item.image} 
@@ -81,23 +143,59 @@ const Cart: React.FC<CartProps> = ({ cart, products, updateQuantity, removeFromC
                     <div className="flex justify-between">
                       <h3 className="text-lg font-medium text-gray-900">{item.name}</h3>
                       <p className="text-lg font-medium text-gray-900">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        {formatKES(item.selectedSizeOption.price * item.quantity)}
                       </p>
                     </div>
                     <p className="mt-1 text-sm text-gray-500">{item.category}</p>
                     <p className="mt-1 text-sm text-gray-500">{item.description}</p>
                     
+                    {/* Size Selection */}
+                    <div className="mt-3 relative">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Size & Price
+                      </label>
+                      <div className="relative">
+                        <button
+                          onClick={() => toggleDropdown(item.cartKey)}
+                          className="w-full sm:w-48 bg-white border border-gray-300 rounded-md px-3 py-2 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 flex justify-between items-center"
+                        >
+                          <span className="text-sm">
+                            {item.selectedSizeOption.label} - {formatKES(item.selectedSizeOption.price)}
+                          </span>
+                          <ChevronDown className={`h-4 w-4 transition-transform ${openDropdowns[item.cartKey] ? 'rotate-180' : ''}`} />
+                        </button>
+                        
+                        {openDropdowns[item.cartKey] && (
+                          <div className="absolute z-10 mt-1 w-full sm:w-48 bg-white border border-gray-300 rounded-md shadow-lg">
+                            {item.sizeOptions.map((sizeOption) => (
+                              <button
+                                key={sizeOption.ml}
+                                onClick={() => handleSizeChange(item.productId, item.selectedSize, sizeOption.ml)}
+                                className={`w-full text-left px-3 py-2 text-sm hover:bg-amber-50 ${
+                                  sizeOption.ml === item.selectedSize 
+                                    ? 'bg-amber-100 text-amber-800' 
+                                    : 'text-gray-700'
+                                }`}
+                              >
+                                {sizeOption.label} - {formatKES(sizeOption.price)}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
                     <div className="mt-4 flex justify-between items-center">
                       <div className="flex items-center border border-gray-300 rounded-md">
                         <button 
-                          onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                          onClick={() => updateQuantity(item.productId, item.selectedSize, Math.max(1, item.quantity - 1))}
                           className="p-2 text-gray-600 hover:text-amber-600"
                         >
                           <Minus className="h-4 w-4" />
                         </button>
                         <span className="px-4 py-2 text-gray-900">{item.quantity}</span>
                         <button 
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.productId, item.selectedSize, item.quantity + 1)}
                           className="p-2 text-gray-600 hover:text-amber-600"
                         >
                           <Plus className="h-4 w-4" />
@@ -105,8 +203,9 @@ const Cart: React.FC<CartProps> = ({ cart, products, updateQuantity, removeFromC
                       </div>
                       
                       <button 
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => removeFromCart(item.productId, item.selectedSize)}
                         className="text-gray-500 hover:text-red-500"
+                        title="Remove item"
                       >
                         <X className="h-5 w-5" />
                       </button>
@@ -125,17 +224,17 @@ const Cart: React.FC<CartProps> = ({ cart, products, updateQuantity, removeFromC
             <div className="space-y-4">
               <div className="flex justify-between">
                 <p className="text-gray-600">Subtotal</p>
-                <p className="text-gray-900 font-medium">${subtotal.toFixed(2)}</p>
+                <p className="text-gray-900 font-medium">{formatKES(subtotal)}</p>
               </div>
               
               <div className="flex justify-between">
                 <p className="text-gray-600">Tax (16%)</p>
-                <p className="text-gray-900 font-medium">${tax.toFixed(2)}</p>
+                <p className="text-gray-900 font-medium">{formatKES(tax)}</p>
               </div>
               
               <div className="flex justify-between pt-4 border-t border-gray-200">
                 <p className="text-lg font-semibold">Total</p>
-                <p className="text-lg font-semibold text-amber-600">${total.toFixed(2)}</p>
+                <p className="text-lg font-semibold text-amber-600">{formatKES(total)}</p>
               </div>
             </div>
             

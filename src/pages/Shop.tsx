@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+
 
 interface Product {
   id: string;
@@ -9,6 +11,7 @@ interface Product {
   price: number;
   image: string;
   description: string;
+  formattedPrice?: string; // Add this to match what's passed from App.tsx
 }
 
 interface ShopProps {
@@ -19,6 +22,10 @@ interface ShopProps {
 const Shop: React.FC<ShopProps> = ({ products, addToCart }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
+const location = useLocation();
+const searchQuery = searchParams.get('search')
+
+
 
   // Update selectedCategory when URL query parameter changes
   useEffect(() => {
@@ -103,7 +110,9 @@ const Shop: React.FC<ShopProps> = ({ products, addToCart }) => {
               <h3 className="text-lg font-semibold text-gray-900 mb-2">{product.name}</h3>
               <p className="text-gray-600 text-sm mb-3">{product.description}</p>
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-amber-600">${product.price}</span>
+                <span className="text-2xl font-bold text-amber-600">
+                  {product.formattedPrice || `KES ${product.price.toLocaleString()}`}
+                </span>
                 <button
                   onClick={() => handleAddToCart(product.id)}
                   className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg transform hover:scale-105"

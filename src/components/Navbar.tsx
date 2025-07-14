@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, User, ShoppingCart, Menu, X, ChevronDown } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 interface NavbarProps {
   cartItemCount?: number;
+  onSearch?: (query: string) => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ cartItemCount = 0 }) => {
+const Navbar: React.FC<NavbarProps> = ({ cartItemCount = 0, onSearch }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,6 +31,50 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemCount = 0 }) => {
     { name: 'Gin', value: 'gin' },
     { name: 'Rum', value: 'rum' }
   ];
+
+  // Handle search functionality
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // Navigate to shop page with search query
+      navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+      // Call onSearch callback if provided
+      if (onSearch) {
+        onSearch(searchQuery.trim());
+      }
+      // Close search on mobile
+      setIsSearchOpen(false);
+    }
+  };
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  // Handle Enter key press for search
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch(e);
+    }
+  };
+
+  // Clear search when closing
+  const handleCloseSearch = () => {
+    setIsSearchOpen(false);
+    setSearchQuery('');
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isShopDropdownOpen) {
+        setIsShopDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isShopDropdownOpen]);
 
   const KiokoLogo = () => (
     <div className="flex items-center relative">
@@ -66,7 +111,8 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemCount = 0 }) => {
             {/* Shop with Dropdown */}
             <div className="relative">
               <button
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   navigate('/shop');
                   setIsShopDropdownOpen(!isShopDropdownOpen);
                 }}
@@ -126,27 +172,35 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemCount = 0 }) => {
             {/* Search */}
             <div className="relative">
               {isSearchOpen ? (
-                <div className="flex items-center">
+                <form onSubmit={handleSearch} className="flex items-center">
                   <input
                     type="text"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={handleSearchInputChange}
+                    onKeyPress={handleKeyPress}
                     placeholder="Search drinks..."
                     className="w-64 pl-4 pr-10 py-2 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                     autoFocus
                   />
                   <button
+                    type="submit"
+                    className="absolute right-8 top-1/2 transform -translate-y-1/2 text-amber-600 hover:text-amber-800"
+                  >
+                    <Search className="h-4 w-4" />
+                  </button>
+                  <button
                     type="button"
-                    onClick={() => setIsSearchOpen(false)}
+                    onClick={handleCloseSearch}
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
                     <X className="h-5 w-5" />
                   </button>
-                </div>
+                </form>
               ) : (
                 <button
                   onClick={() => setIsSearchOpen(true)}
                   className="text-gray-700 hover:text-amber-600 p-2 transition-colors duration-200"
+                  title="Search drinks"
                 >
                   <Search className="h-5 w-5" />
                 </button>
@@ -197,6 +251,25 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemCount = 0 }) => {
         {isMobileMenuOpen && (
           <div className="lg:hidden border-t border-amber-200">
             <div className="px-2 pt-2 pb-3 space-y-1">
+              {/* Mobile Search */}
+              <div className="px-3 py-2">
+                <form onSubmit={handleSearch} className="flex items-center">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={handleSearchInputChange}
+                    placeholder="Search drinks..."
+                    className="flex-1 px-3 py-2 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm"
+                  />
+                  <button
+                    type="submit"
+                    className="ml-2 px-3 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors duration-200"
+                  >
+                    <Search className="h-4 w-4" />
+                  </button>
+                </form>
+              </div>
+
               <Link
                 to="/shop"
                 onClick={() => setIsMobileMenuOpen(false)}
