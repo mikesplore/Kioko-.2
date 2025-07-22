@@ -1,4 +1,4 @@
-import { Routes, Route, Form } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -361,11 +361,12 @@ function App() {
               <Route path="/contact" element={<Contact />} />
               <Route path="/login" element={<Login />} />
               <Route path="/cart" element={
+                 
                 <Cart 
-                  cart={cart} 
-                  products={productsWithFormattedPrices}
-                  updateQuantity={updateCartQuantity} 
-                  removeFromCart={removeFromCart}
+                  cart ={cart} 
+                  products={productsWithFormattedPrices} 
+                  updateCartQuantity={updateCartQuantity} 
+                  removeFromCart={removeFromCart} 
                 />
               } />
               <Route path="/debug-styles" element={<DebugStyles />} />
@@ -380,3 +381,4 @@ function App() {
 }
 
 export default App;
+

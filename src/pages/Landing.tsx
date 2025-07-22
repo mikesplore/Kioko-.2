@@ -1,43 +1,205 @@
 import { useState, useEffect } from 'react';
 import { Clock, Shield, Award, Star, Phone, Truck, Gift } from 'lucide-react';
 
+// Define interfaces matching your cart system
+interface SizeOption {
+  ml: number;
+  price: number;
+  label: string;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  image: string;
+  description: string;
+  sizeOptions?: SizeOption[];
+}
+
+interface CartItem {
+  productId: string;
+  selectedSize: number;
+  quantity: number;
+}
+
 export default function KiokoEnterpriseLandingPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [cart, setCart] = useState<{[key: string]: CartItem[]}>({});
+  const [notification, setNotification] = useState<string | null>(null);
 
-  const featuredProducts = [
+  // Convert your featured products to match the cart system format
+  const featuredProducts: Product[] = [
     {
+      id: "whisky-premium-001",
       name: "Premium Whisky Collection",
-      originalPrice: "12,589/-",
-      currentPrice: "10,469/-",
-      rating: 4.67,
-      discount: true,
-      savingsPercent: 17,
-      image: "https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=400&h=400&fit=crop"
+      category: "Whisky",
+      price: 10469,
+      image: "https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=400&h=400&fit=crop",
+      description: "Premium imported whisky with rich flavor and smooth finish",
+      sizeOptions: [
+        { ml: 250, price: 7500, label: '250ml' },
+        { ml: 500, price: 10469, label: '500ml' },
+        { ml: 750, price: 14500, label: '750ml' },
+        { ml: 1000, price: 18000, label: '1L' }
+      ]
     },
     {
+      id: "beer-tusker-001",
       name: "Local Tusker Beer",
-      originalPrice: "4,800/-",
-      currentPrice: "4,159/-", 
-      rating: 4.72,
-      discount: true,
-      savingsPercent: 13,
-      image: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=400&h=400&fit=crop"
+      category: "Beer",
+      price: 4159,
+      image: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=400&h=400&fit=crop",
+      description: "Kenya's favorite beer, crisp and refreshing",
+      sizeOptions: [
+        { ml: 330, price: 300, label: '330ml Bottle' },
+        { ml: 500, price: 4159, label: '500ml Can' },
+        { ml: 1000, price: 7500, label: '1L Bottle' }
+      ]
     },
     {
+      id: "wine-premium-001",
       name: "Premium Wine Selection",
-      currentPrice: "2,999/-",
-      rating: 4.50,
-      discount: false,
-      image: "https://www.thejefferson.co.nz/wp-content/uploads/2024/03/glass-of-red-wine.jpg"
+      category: "Wine",
+      price: 2999,
+      image: "https://www.thejefferson.co.nz/wp-content/uploads/2024/03/glass-of-red-wine.jpg",
+      description: "Carefully selected premium wines from around the world",
+      sizeOptions: [
+        { ml: 375, price: 2000, label: '375ml' },
+        { ml: 750, price: 2999, label: '750ml' },
+        { ml: 1500, price: 5500, label: '1.5L' }
+      ]
     },
     {
+      id: "vodka-premium-001",
       name: "Vodka Premium",
-      currentPrice: "2,499/-",
-      rating: 4.75,
-      discount: false,
-      image: "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=400&fit=crop"
+      category: "Vodka",
+      price: 2499,
+      image: "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=400&fit=crop",
+      description: "Premium vodka with pure, clean taste",
+      sizeOptions: [
+        { ml: 250, price: 1800, label: '250ml' },
+        { ml: 500, price: 2499, label: '500ml' },
+        { ml: 750, price: 3500, label: '750ml' },
+        { ml: 1000, price: 4500, label: '1L' }
+      ]
     }
   ];
+
+  // Helper function to get default size options
+  const getDefaultSizeOptions = (basePrice: number): SizeOption[] => [
+    { ml: 250, price: basePrice * 0.7, label: '250ml' },
+    { ml: 500, price: basePrice, label: '500ml' },
+    { ml: 750, price: basePrice * 1.4, label: '750ml' },
+    { ml: 1000, price: basePrice * 1.8, label: '1L' }
+  ];
+
+  // Add to cart function
+  const addToCart = (productId: string, selectedSize: number = 500, quantity: number = 1) => {
+    setCart(prevCart => {
+      const newCart = { ...prevCart };
+      
+      if (!newCart[productId]) {
+        newCart[productId] = [];
+      }
+      
+      const existingItemIndex = newCart[productId].findIndex(item => item.selectedSize === selectedSize);
+      
+      if (existingItemIndex >= 0) {
+        // Update existing item quantity
+        newCart[productId][existingItemIndex].quantity += quantity;
+      } else {
+        // Add new item
+        newCart[productId].push({
+          productId,
+          selectedSize,
+          quantity
+        });
+      }
+      
+      return newCart;
+    });
+
+    // Show notification
+    const product = featuredProducts.find(p => p.id === productId);
+    if (product) {
+      setNotification(`${product.name} added to cart!`);
+      setTimeout(() => setNotification(null), 3000);
+    }
+  };
+
+  // Update quantity function
+  const updateQuantity = (productId: string, sizeML: number, newQuantity: number) => {
+    if (newQuantity <= 0) {
+      removeFromCart(productId, sizeML);
+      return;
+    }
+    
+    setCart(prevCart => {
+      const newCart = { ...prevCart };
+      if (newCart[productId]) {
+        const itemIndex = newCart[productId].findIndex(item => item.selectedSize === sizeML);
+        if (itemIndex >= 0) {
+          newCart[productId][itemIndex].quantity = newQuantity;
+        }
+      }
+      return newCart;
+    });
+  };
+
+  // Remove from cart function
+  const removeFromCart = (productId: string, sizeML: number) => {
+    setCart(prevCart => {
+      const newCart = { ...prevCart };
+      if (newCart[productId]) {
+        newCart[productId] = newCart[productId].filter(item => item.selectedSize !== sizeML);
+        if (newCart[productId].length === 0) {
+          delete newCart[productId];
+        }
+      }
+      return newCart;
+    });
+  };
+
+  // Update size function
+  const updateSize = (productId: string, oldSizeML: number, newSizeML: number) => {
+    setCart(prevCart => {
+      const newCart = { ...prevCart };
+      if (newCart[productId]) {
+        const itemIndex = newCart[productId].findIndex(item => item.selectedSize === oldSizeML);
+        if (itemIndex >= 0) {
+          const quantity = newCart[productId][itemIndex].quantity;
+          // Remove old size
+          newCart[productId].splice(itemIndex, 1);
+          // Add new size
+          const existingNewSizeIndex = newCart[productId].findIndex(item => item.selectedSize === newSizeML);
+          if (existingNewSizeIndex >= 0) {
+            newCart[productId][existingNewSizeIndex].quantity += quantity;
+          } else {
+            newCart[productId].push({
+              productId,
+              selectedSize: newSizeML,
+              quantity
+            });
+          }
+        }
+      }
+      return newCart;
+    });
+  };
+
+  // Calculate cart total items
+  const getTotalCartItems = () => {
+    return Object.values(cart).reduce((total, items) => {
+      return total + items.reduce((sum, item) => sum + item.quantity, 0);
+    }, 0);
+  };
+
+  // Format price for display
+  const formatPrice = (price: number) => {
+    return price.toLocaleString('en-KE');
+  };
 
   const slides = [
     {
@@ -72,6 +234,20 @@ export default function KiokoEnterpriseLandingPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Notification */}
+      {notification && (
+        <div className="fixed top-4 right-4 bg-emerald-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce">
+          {notification}
+        </div>
+      )}
+
+      {/* Cart Badge (optional - you can add this to your header) */}
+      {getTotalCartItems() > 0 && (
+        <div className="fixed top-4 left-4 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm z-50">
+          {getTotalCartItems()}
+        </div>
+      )}
+
       {/* Hero Section - Full Height */}
       <section className="relative h-screen overflow-hidden">
         <div className={`absolute inset-0 bg-gradient-to-br ${slides[currentSlide].bgGradient} transition-all duration-1000`}>
@@ -188,19 +364,15 @@ export default function KiokoEnterpriseLandingPage() {
             ].map((category, index) => (
               <div key={index} className="text-center group cursor-pointer">
                 <div className="relative w-36 h-44 bg-white rounded-2xl mx-auto mb-4 group-hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl overflow-hidden">
-                  {/* Product Image */}
                   <img 
                     src={category.image} 
                     alt={category.name}
                     className="absolute inset-0 w-full h-full object-cover rounded-2xl"
                   />
-                  {/* Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent rounded-2xl"></div>
-                  {/* Count Badge */}
                   <div className="absolute bottom-3 left-3 bg-black/80 text-white px-2 py-1 rounded-full text-xs font-bold">
                     {category.count}
                   </div>
-                  {/* Brand Badge */}
                   <div className="absolute top-3 right-3 bg-white/95 text-gray-900 px-2 py-1 rounded-full text-xs font-bold">
                     KIOKO
                   </div>
@@ -226,66 +398,74 @@ export default function KiokoEnterpriseLandingPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredProducts.map((product, index) => (
-              <div key={index} className="bg-white border-0 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 relative overflow-hidden group">
-                {product.discount && (
-                  <div className="absolute top-4 left-4 bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-bold z-10 shadow-lg">
-                    {product.savingsPercent}% OFF
-                  </div>
-                )}
-                
-                <div className="aspect-square bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 rounded-t-2xl flex items-center justify-center relative overflow-hidden">
-                  <img 
-                    src={product.image} 
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                  <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full shadow-lg flex items-center justify-center">
-                    <Gift className="w-5 h-5 text-white" />
-                  </div>
-                </div>
-                
-                <div className="p-6">
-                  <div className="flex items-center mb-3">
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star 
-                          key={i} 
-                          className={`w-4 h-4 ${
-                            i < Math.floor(product.rating) 
-                              ? 'text-yellow-400 fill-current' 
-                              : 'text-gray-300'
-                          }`} 
-                        />
-                      ))}
+            {featuredProducts.map((product, index) => {
+              const hasDiscount = index < 2; // First two products have discounts
+              const originalPrice = hasDiscount ? product.price * 1.2 : product.price;
+              const discountPercent = hasDiscount ? Math.round(((originalPrice - product.price) / originalPrice) * 100) : 0;
+              
+              return (
+                <div key={product.id} className="bg-white border-0 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 relative overflow-hidden group">
+                  {hasDiscount && (
+                    <div className="absolute top-4 left-4 bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-bold z-10 shadow-lg">
+                      {discountPercent}% OFF
                     </div>
-                    <span className="text-sm text-gray-600 ml-2 font-medium">
-                      {product.rating}
-                    </span>
+                  )}
+                  
+                  <div className="aspect-square bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 rounded-t-2xl flex items-center justify-center relative overflow-hidden">
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                    <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full shadow-lg flex items-center justify-center">
+                      <Gift className="w-5 h-5 text-white" />
+                    </div>
                   </div>
                   
-                  <h3 className="font-bold text-gray-900 mb-3 text-lg">{product.name}</h3>
-                  
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      {product.discount && (
-                        <span className="text-gray-500 line-through text-sm mr-2">
-                          KSH {product.originalPrice}
-                        </span>
-                      )}
-                      <span className="text-emerald-600 font-bold text-xl">
-                        KSH {product.currentPrice}
+                  <div className="p-6">
+                    <div className="flex items-center mb-3">
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Star 
+                            key={i} 
+                            className={`w-4 h-4 ${
+                              i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                            }`} 
+                          />
+                        ))}
+                      </div>
+                      <span className="text-sm text-gray-600 ml-2 font-medium">
+                        4.67
                       </span>
                     </div>
+                    
+                    <h3 className="font-bold text-gray-900 mb-3 text-lg">{product.name}</h3>
+                    <p className="text-sm text-gray-600 mb-3">{product.description}</p>
+                    
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        {hasDiscount && (
+                          <span className="text-gray-500 line-through text-sm mr-2">
+                            KSH {formatPrice(originalPrice)}
+                          </span>
+                        )}
+                        <span className="text-emerald-600 font-bold text-xl">
+                          KSH {formatPrice(product.price)}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <button 
+                      onClick={() => addToCart(product.id)}
+                      className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3 rounded-xl hover:from-emerald-700 hover:to-teal-700 transition-all font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
+                    >
+                      Add to Cart
+                    </button>
                   </div>
-                  
-                  <button className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3 rounded-xl hover:from-emerald-700 hover:to-teal-700 transition-all font-semibold shadow-lg hover:shadow-xl transform hover:scale-105">
-                    Add to Cart
-                  </button>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
