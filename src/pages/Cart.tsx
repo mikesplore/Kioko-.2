@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, Plus, Minus, ChevronDown } from 'lucide-react';
+import React from 'react';
+import { X, Plus, Minus } from 'lucide-react';
 
 // Define size options interface
 interface SizeOption {
@@ -20,91 +20,53 @@ interface Product {
 }
 
 // Updated cart item interface to include selected size
-interface CartItem {
-  productId: string;
-  selectedSize: number; // ML size
-  quantity: number;
-}
-
 interface CartProps {
-  cart: {[key: string]: CartItem[]};
+  cart: {[key: string]: number};
   products: Product[];
-  updateQuantity: (productId: string, sizeML: number, newQuantity: number) => void;
-  removeFromCart: (productId: string, sizeML: number) => void;
-  updateSize: (productId: string, oldSizeML: number, newSizeML: number) => void;
+  updateCartQuantity: (productId: string, newQuantity: number) => void;
+  removeFromCart: (productId: string) => void;
 }
 
 const Cart: React.FC<CartProps> = ({ 
   cart = {}, 
   products = [], 
-  updateQuantity = () => {}, 
+  updateCartQuantity = () => {}, 
   removeFromCart = () => {}, 
-  updateSize = () => {} 
 }) => {
-  const [openDropdowns, setOpenDropdowns] = useState<{[key: string]: boolean}>({});
-
-
-
-  // Helper function to format KES currency
+  // Currency formatting function for Kenyan Shillings
   const formatKES = (amount: number): string => {
-    return `KES ${amount.toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const formatted = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+      useGrouping: true
+    }).format(amount);
+    return `KES ${formatted}`;
   };
+  // Removed unused state openDropdowns
 
-  // Helper function to get default size options if not provided
-  const getDefaultSizeOptions = (basePrice: number): SizeOption[] => [
-    { ml: 250, price: basePrice * 0.7, label: '250ml' },
-    { ml: 500, price: basePrice, label: '500ml' },
-    { ml: 750, price: basePrice * 1.4, label: '750ml' },
-    { ml: 1000, price: basePrice * 1.8, label: '1L' }
-  ];
 
   // Flatten cart items with product details
-  const cartItems = Object.entries(cart || {}).flatMap(([productId, items]) => {
-    const product = products.find(p => p.id === productId);
-    
-    if (!product || !items || !Array.isArray(items)) {
-      return [];
-    }
-    
-    const sizeOptions = product.sizeOptions || getDefaultSizeOptions(product.price);
-    
-    return items.map(item => {
-      const selectedSizeOption = sizeOptions.find(size => size.ml === item.selectedSize);
+  const cartItems = Object.entries(cart || {})
+    .map(([productId, quantity]) => {
+      const product = products.find(p => p.id === productId);
+      if (!product) return undefined;
       return {
         ...product,
-        ...item,
-        selectedSizeOption: selectedSizeOption || sizeOptions[0],
-        sizeOptions,
-        cartKey: `${productId}-${item.selectedSize}`
+        quantity,
+        cartKey: productId
       };
-    });
-  });
+    })
+    .filter((item): item is Product & { quantity: number; cartKey: string } => !!item);
 
   console.log('Final cart items:', cartItems);
 
   // Calculate totals
   const subtotal = cartItems.reduce((sum, item) => {
-    return sum + ((item.selectedSizeOption?.price || 0) * (item.quantity || 1));
+    return sum + ((item.price || 0) * (item.quantity || 1));
   }, 0);
   const tax = subtotal * 0.16; // 16% tax rate
   const total = subtotal + tax;
 
-  // Toggle dropdown
-  const toggleDropdown = (cartKey: string) => {
-    setOpenDropdowns(prev => ({
-      ...prev,
-      [cartKey]: !prev[cartKey]
-    }));
-  };
-
-  // Handle size change
-  const handleSizeChange = (productId: string, oldSizeML: number, newSizeML: number) => {
-    updateSize(productId, oldSizeML, newSizeML);
-    setOpenDropdowns(prev => ({
-      ...prev,
-      [`${productId}-${oldSizeML}`]: false
-    }));
-  };
 
   if (cartItems.length === 0) {
     return (
@@ -154,72 +116,33 @@ const Cart: React.FC<CartProps> = ({
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    
                     <div className="flex-1">
                       <div className="flex justify-between">
                         <h3 className="text-lg font-medium text-gray-900">{item.name}</h3>
                         <p className="text-lg font-medium text-gray-900">
-                          {formatKES(item.selectedSizeOption.price * item.quantity)}
+                          {formatKES(item.price * item.quantity)}
                         </p>
                       </div>
                       <p className="mt-1 text-sm text-gray-500">{item.category}</p>
                       <p className="mt-1 text-sm text-gray-500">{item.description}</p>
-                      
-                      {/* Size Selection */}
-                      <div className="mt-3 relative">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Size & Price
-                        </label>
-                        <div className="relative">
-                          <button
-                            onClick={() => toggleDropdown(item.cartKey)}
-                            className="w-full sm:w-48 bg-white border border-gray-300 rounded-md px-3 py-2 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 flex justify-between items-center"
-                          >
-                            <span className="text-sm">
-                              {item.selectedSizeOption.label} - {formatKES(item.selectedSizeOption.price)}
-                            </span>
-                            <ChevronDown className={`h-4 w-4 transition-transform ${openDropdowns[item.cartKey] ? 'rotate-180' : ''}`} />
-                          </button>
-                          
-                          {openDropdowns[item.cartKey] && (
-                            <div className="absolute z-10 mt-1 w-full sm:w-48 bg-white border border-gray-300 rounded-md shadow-lg">
-                              {item.sizeOptions.map((sizeOption) => (
-                                <button
-                                  key={sizeOption.ml}
-                                  onClick={() => handleSizeChange(item.productId, item.selectedSize, sizeOption.ml)}
-                                  className={`w-full text-left px-3 py-2 text-sm hover:bg-amber-50 ${
-                                    sizeOption.ml === item.selectedSize 
-                                      ? 'bg-amber-100 text-amber-800' 
-                                      : 'text-gray-700'
-                                  }`}
-                                >
-                                  {sizeOption.label} - {formatKES(sizeOption.price)}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      
                       <div className="mt-4 flex justify-between items-center">
                         <div className="flex items-center border border-gray-300 rounded-md">
                           <button 
-                            onClick={() => updateQuantity(item.productId, item.selectedSize, Math.max(1, item.quantity - 1))}
+                            onClick={() => updateCartQuantity(item.id, Math.max(1, item.quantity - 1))}
                             className="p-2 text-gray-600 hover:text-amber-600"
                           >
                             <Minus className="h-4 w-4" />
                           </button>
                           <span className="px-4 py-2 text-gray-900">{item.quantity}</span>
                           <button 
-                            onClick={() => updateQuantity(item.productId, item.selectedSize, item.quantity + 1)}
+                            onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
                             className="p-2 text-gray-600 hover:text-amber-600"
                           >
                             <Plus className="h-4 w-4" />
                           </button>
                         </div>
-                        
                         <button 
-                          onClick={() => removeFromCart(item.productId, item.selectedSize)}
+                          onClick={() => removeFromCart(item.id)}
                           className="text-gray-500 hover:text-red-500"
                           title="Remove item"
                         >

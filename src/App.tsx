@@ -7,7 +7,7 @@ import Landing from './pages/Landing';
 import Shop from './pages/Shop';
 import About from './pages/About';
 import Contact from './pages/contact';
-import Login from './pages/login';
+import LoginComponent from './pages/login';
 import Cart from './pages/Cart';
 import DebugStyles from './components/DebugStyles';
 import TailwindTest from './components/TailwindTest';
@@ -306,9 +306,175 @@ function App() {
       name: 'Lamb\'s Navy Rum',
       category: 'rum',
       price: 2000,
-      image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=300&h=300&fit=crop',
+      image: 'https://soys.co.ke/PImages/LATLE-0.png',
       description: 'Dark navy rum with bold, full-bodied taste'
-    }
+    },
+
+    // WATER
+    {
+      id: '33',
+      name: 'Dasani Drinking Water 500ml',
+      category: 'water',
+      price: 50,
+      image: 'https://greenspoon.co.ke/wp-content/uploads/2024/06/Greenspoon-dasani-1L-1-of-1.jpg',
+      description: 'Pure, refreshing drinking water in convenient bottle'
+    },
+    {
+      id: '34',
+      name: 'Keringet Natural Mineral Water 500ml',
+      category: 'water',
+      price: 80,
+      image: 'https://www.oaks.delivery/wp-content/uploads/keringet-natural.jpg',
+      description: 'Natural mineral water from the Kenyan highlands'
+    },
+    {
+      id: '35',
+      name: 'Aquafina Purified Water 500ml',
+      category: 'water',
+      price: 60,
+      image: 'https://cdn.mafrservices.com/sys-master-root/ha4/hfb/13723583840286/870051_main.jpg?im=Resize=480',
+      description: 'Pure, crisp taste with 7-step purification process'
+    },
+    {
+      id: '36',
+      name: 'Evian Natural Spring Water 500ml',
+      category: 'water',
+      price: 150,
+      image: 'https://barkeeper.co.za/wp-content/uploads/2024/06/Evian-500ml-Natural-Spring-Water.png',
+      description: 'Premium natural spring water from French Alps'
+    },
+    {
+      id: '37',
+      name: 'Highlands Natural Mineral Water 1.5L',
+      category: 'water',
+      price: 120,
+      image: 'https://digitalcontent.api.tesco.com/v2/media/ghs/d2e0a0c1-f235-41b0-a7d3-7e9969195007/2baaf7bb-0331-4f92-a7aa-4fd2bd5366a0_1767530515.jpeg?h=960&w=960',
+      description: 'Large bottle of natural mineral water for sharing'
+    },
+    {
+      id: '38',
+      name: 'Maji Safi Bottled Water 500ml',
+      category: 'water',
+      price: 45,
+      image: 'https://nordlys.co.ke/wp-content/uploads/2023/10/download-29-1.jpeg',
+      description: 'Clean, affordable bottled water for everyday hydration'
+    },
+
+    // SOFT DRINKS
+    {
+      id: '39',
+      name: 'Coca-Cola Original 500ml',
+      category: 'soft-drinks',
+      price: 100,
+      image: 'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=300&h=300&fit=crop',
+      description: 'The original and iconic cola with that classic taste'
+    },
+    {
+      id: '40',
+      name: 'Pepsi Cola 500ml',
+      category: 'soft-drinks',
+      price: 95,
+      image: 'https://images.unsplash.com/photo-1629203849820-fdd70d49c38e?w=300&h=300&fit=crop',
+      description: 'Bold cola taste with a refreshing twist'
+    },
+    {
+      id: '41',
+      name: 'Fanta Orange 500ml',
+      category: 'soft-drinks',
+      price: 90,
+      image: 'https://www.myccba.africa/media/catalog/product/cache/5479647258cfabec4d973a924b24e3d0/1/1/11278.jpg',
+      description: 'Bright orange soda with natural citrus flavor'
+    },
+    {
+      id: '42',
+      name: 'Sprite Lemon-Lime 500ml',
+      category: 'soft-drinks',
+      price: 90,
+      image: 'https://i0.wp.com/liquorsquare.store/wp-content/uploads/2024/03/Sprite-Lemon-Lime-Flavoured-Soda-500ml.jpg?fit=1000%2C1000&ssl=1',
+      description: 'Clear, crisp lemon-lime soda with no caffeine'
+    },
+    {
+      id: '43',
+      name: 'Stoney Tangawizi Ginger Ale 500ml',
+      category: 'soft-drinks',
+      price: 85,
+      image: 'https://www.oaks.delivery/wp-content/uploads/stoney-zero-sugar-500ml.jpg',
+      description: 'Spicy ginger ale with authentic African ginger taste'
+    },
+    {
+      id: '44',
+      name: 'Schweppes Tonic Water 500ml',
+      category: 'soft-drinks',
+      price: 110,
+      image: 'https://www.oaks.delivery/wp-content/uploads/2017/09/schweppes-tonic-500.jpg',
+      description: 'Classic tonic water with distinctive bitter taste'
+    },
+    {
+      id: '45',
+      name: 'Krest Bitter Lemon 500ml',
+      category: 'soft-drinks',
+      price: 95,
+      image: 'https://www.vintageliquorkenya.com/wp-content/uploads/2021/12/Krest-Bitter-Lemon-500ml.jpg',
+      description: 'Refreshing bitter lemon drink with citrus zest'
+    },
+    {
+      id: '46',
+      name: 'Mountain Dew 500ml',
+      category: 'soft-drinks',
+      price: 105,
+      image: 'https://media.edgexm.co.ke/photos/products/Mountain_Dew_Pet_Bottle_500ml.jpg',
+      description: 'Citrus soda with bold, energizing taste'
+    },
+    {
+      id: '47',
+      name: '7UP Lemon Lime 500ml',
+      category: 'soft-drinks',
+      price: 88,
+      image: 'https://www.drinksupermarket.com/media/catalog/product/cache/5f04ab24719be9ed8cd6e7041fccd020/7/u/7up-lemon-lime-500ml.jpg',
+      description: 'Clean, refreshing lemon-lime soda'
+    },
+    {
+      id: '48',
+      name: 'Mirinda Orange 500ml',
+      category: 'soft-drinks',
+      price: 92,
+      image: 'https://foodbazaar.co.uk/cdn/shop/products/MIRINDA-ORANGE-BOTTLE-500ml-1.png?v=1671449350',
+      description: 'Fruity orange soda with vibrant citrus flavor'
+    },
+
+    // ENERGY DRINKS
+    {
+      id: '49',
+      name: 'Red Bull Energy Drink 250ml',
+      category: 'energy-drinks',
+      price: 250,
+      image: 'https://www.mrprice.online/cdn/shop/files/mrprice-online-fitness-equipment-accessories-default-title-red-bull-energy-drink-250ml-can-56428835045712.jpg?v=1742818498',
+      description: 'Original energy drink with caffeine, taurine and B-vitamins'
+    },
+    {
+      id: '50',
+      name: 'Monster Energy Green 500ml',
+      category: 'energy-drinks',
+      price: 280,
+      image: 'https://cdn.mafrservices.com/sys-master-root/h73/h53/16872066547742/33440_main.jpg?im=Resize=480',
+      description: 'High-energy drink with bold flavor and maximum boost'
+    },
+    {
+      id: '51',
+      name: 'Power Horse Energy Drink 250ml',
+      category: 'energy-drinks',
+      price: 180,
+      image: 'https://cdn.mafrservices.com/sys-master-root/h62/hf8/12618778542110/123067_Main.jpg?im=Resize=1700',
+      description: 'Energy drink with vitamins and natural caffeine'
+    },
+    {
+      id: '55',
+      name: 'Predator Energy Drink 250ml',
+      category: 'energy-drinks',
+      price: 160,
+      image: 'https://www.tawalasupermarket.co.ke/1733-large_default/predator-energy-drink-pet-400ml.jpg',
+      description: 'Affordable energy drink with great taste'
+    },
   ];
 
   // Cart functions
@@ -359,7 +525,7 @@ function App() {
               <Route path="/shop" element={<Shop products={productsWithFormattedPrices} addToCart={addToCart} />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/login" element={<Login />} />
+              <Route path="/login" element={<LoginComponent />} />
               <Route path="/cart" element={
                  
                 <Cart 
@@ -381,4 +547,3 @@ function App() {
 }
 
 export default App;
-

@@ -1,121 +1,67 @@
-import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useState } from 'react';
+import { type ChangeEvent, type MouseEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-interface LoginProps {}
 
-const Login: React.FC<LoginProps> = () => {
-  // Get auth context
-  const { login } = useAuth();
-  
-  // State management
-  const [isActive, setIsActive] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isRegisterLoading, setIsRegisterLoading] = useState(false);
+const LoginComponent: React.FC = () => {
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isRegisterMode, setIsRegisterMode] = useState<boolean>(false);
 
-  // Login form state
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [loginError, setLoginError] = useState('');
+  // Registration form states
+  const [regUsername, setRegUsername] = useState<string>('');
+  const [regEmail, setRegEmail] = useState<string>('');
+  const [regPassword, setRegPassword] = useState<string>('');
 
-  // Register form state
-  const [registerUsername, setRegisterUsername] = useState('');
-  const [registerEmail, setRegisterEmail] = useState('');
-  const [registerPassword, setRegisterPassword] = useState('');
-  const [registerError, setRegisterError] = useState('');
+  // Mock auth functions (replace with your actual implementation)
+  const login = async (username: string, password: string): Promise<boolean> => {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return username === 'admin' && password === 'password';
+  };
 
-  // Success message
-  const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
 
-  // Handle login form submission
-  const handleLoginSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setLoginError('');
-    setSuccess('');
+    setError('');
     setIsLoading(true);
 
     try {
-      // Use auth context login function
       const success = await login(username, password);
-      
       if (success) {
-        setSuccess('Login successful! Redirecting...');
-        setTimeout(() => {
-          console.log('Redirecting to dashboard...');
-          // Add your redirect logic here - could navigate back to shop page
-        }, 1500);
+        navigate('/dashboard');
       } else {
-        setLoginError('Invalid username or password');
+        setError('Invalid username or password');
       }
-    } catch (error) {
-      setLoginError('An error occurred during login');
+    } catch (err) {
+      setError('An error occurred during login');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Handle register form submission
-  const handleRegisterSubmit = async (e: React.FormEvent) => {
+  const handleRegisterSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setRegisterError('');
-    setSuccess('');
-    setIsRegisterLoading(true);
-
-    // Client-side validation
-    if (!registerUsername || !registerEmail || !registerPassword) {
-      setRegisterError('Please fill in all fields');
-      setIsRegisterLoading(false);
-      return;
-    }
-
-    if (registerPassword.length < 6) {
-      setRegisterError('Password must be at least 6 characters');
-      setIsRegisterLoading(false);
-      return;
-    }
-
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Replace with actual registration logic
-      setSuccess('Registration successful! You can now login.');
-      setRegisterUsername('');
-      setRegisterEmail('');
-      setRegisterPassword('');
-
-      // Auto-switch to login form after successful registration
-      setTimeout(() => {
-        setIsActive(false);
-        setSuccess('');
-      }, 2000);
-    } catch (error) {
-      setRegisterError('Registration failed. Please try again.');
-    } finally {
-      setIsRegisterLoading(false);
-    }
+    // Add your registration logic here
+    console.log('Registration:', { regUsername, regEmail, regPassword });
   };
 
-  // Handle social login (placeholder)
-  const handleSocialLogin = (provider: string) => {
-    console.log(`Login with ${provider}`);
-    // Implement social login logic here
-  };
-
-  // Styles object
   const styles = {
-    loginPage: {
+    body: {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
       minHeight: '100vh',
       background: 'linear-gradient(90deg, #e2e2e2, #c9d6ff)',
-      fontFamily: '"Inter", sans-serif',
+      fontFamily: "'Poppins', sans-serif",
       margin: 0,
       padding: 0,
-    } as React.CSSProperties,
-
+    },
     container: {
-      position: 'relative',
+      position: 'relative' as const,
       width: '850px',
       height: '550px',
       background: '#fff',
@@ -123,55 +69,51 @@ const Login: React.FC<LoginProps> = () => {
       borderRadius: '30px',
       boxShadow: '0 0 30px rgba(0, 0, 0, 0.2)',
       overflow: 'hidden',
-    } as React.CSSProperties,
-
+    },
     formBox: {
-      position: 'absolute',
-      right: isActive ? '50%' : '0',
+      position: 'absolute' as const,
+      right: isRegisterMode ? '50%' : '0',
       width: '50%',
       height: '100%',
       background: '#fff',
       display: 'flex',
       alignItems: 'center',
       color: '#333',
-      textAlign: 'center',
+      textAlign: 'center' as const,
       padding: '40px',
       zIndex: 1,
       transition: '0.6s ease-in-out 1.2s, visibility 0s 1s',
-    } as React.CSSProperties,
-
+    },
     registerBox: {
-      position: 'absolute',
-      left: isActive ? '50%' : '100%',
+      position: 'absolute' as const,
+      right: '0',
       width: '50%',
       height: '100%',
       background: '#fff',
       display: 'flex',
       alignItems: 'center',
       color: '#333',
-      textAlign: 'center',
+      textAlign: 'center' as const,
       padding: '40px',
       zIndex: 1,
-      visibility: isActive ? 'visible' : 'hidden',
+      visibility: isRegisterMode ? 'visible' as const : 'hidden' as const,
       transition: '0.6s ease-in-out 1.2s, visibility 0s 1s',
-    } as React.CSSProperties,
-
+    },
     form: {
       width: '100%',
-    } as React.CSSProperties,
-
-    title: {
+    },
+    h1: {
       fontSize: '36px',
-      margin: '-10px 0 20px 0',
-      color: '#333',
-      fontWeight: '600',
-    } as React.CSSProperties,
-
+      margin: '-10px 0',
+    },
+    p: {
+      fontSize: '14.5px',
+      margin: '15px 0',
+    },
     inputBox: {
-      position: 'relative',
+      position: 'relative' as const,
       margin: '30px 0',
-    } as React.CSSProperties,
-
+    },
     input: {
       width: '100%',
       padding: '13px 50px 13px 20px',
@@ -181,38 +123,26 @@ const Login: React.FC<LoginProps> = () => {
       outline: 'none',
       fontSize: '16px',
       color: '#333',
-      fontWeight: '500',
-      transition: 'all 0.3s ease',
-      boxSizing: 'border-box',
-    } as React.CSSProperties,
-
-    inputDisabled: {
-      opacity: 0.7,
-      cursor: 'not-allowed',
-    } as React.CSSProperties,
-
+      fontWeight: 500,
+      boxSizing: 'border-box' as const,
+    },
     icon: {
-      position: 'absolute',
+      position: 'absolute' as const,
       right: '20px',
       top: '50%',
       transform: 'translateY(-50%)',
       fontSize: '20px',
-      color: '#7494ec',
-    } as React.CSSProperties,
-
+      color: '#888',
+    },
     forgotLink: {
       margin: '-15px 0 15px',
-      textAlign: 'left',
-    } as React.CSSProperties,
-
+    },
     forgotLinkA: {
       fontSize: '14.5px',
       color: '#333',
-      cursor: 'pointer',
       textDecoration: 'none',
-      transition: 'color 0.3s ease',
-    } as React.CSSProperties,
-
+      cursor: 'pointer',
+    },
     btn: {
       width: '100%',
       height: '48px',
@@ -223,295 +153,130 @@ const Login: React.FC<LoginProps> = () => {
       cursor: 'pointer',
       fontSize: '16px',
       color: '#fff',
-      fontWeight: '600',
-      transition: 'all 0.3s ease',
-    } as React.CSSProperties,
-
-    btnDisabled: {
-      opacity: 0.7,
-      cursor: 'not-allowed',
-    } as React.CSSProperties,
-
-    socialText: {
-      fontSize: '14.5px',
-      margin: '15px 0',
-      color: '#333',
-    } as React.CSSProperties,
-
+      fontWeight: 600,
+    },
     socialIcons: {
       display: 'flex',
       justifyContent: 'center',
-      gap: '10px',
-      marginTop: '20px',
-    } as React.CSSProperties,
-
+      marginTop: '15px',
+    },
     socialIcon: {
       display: 'inline-flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: '40px',
-      height: '40px',
+      padding: '10px',
       border: '2px solid #ccc',
       borderRadius: '8px',
-      fontSize: '20px',
+      fontSize: '24px',
       color: '#333',
-      cursor: 'pointer',
+      margin: '0 8px',
       textDecoration: 'none',
-      transition: 'all 0.3s ease',
-    } as React.CSSProperties,
-
+      cursor: 'pointer',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '44px',
+      height: '44px',
+    },
     toggleBox: {
-      position: 'absolute',
+      position: 'absolute' as const,
       width: '100%',
       height: '100%',
-    } as React.CSSProperties,
-
+    },
     toggleBoxBefore: {
       content: '""',
-      position: 'absolute',
-      left: isActive ? '50%' : '-250%',
+      position: 'absolute' as const,
+      left: isRegisterMode ? '50%' : '-250%',
       width: '300%',
       height: '100%',
       background: '#7494ec',
       borderRadius: '150px',
       zIndex: 2,
       transition: '1.8s ease-in-out',
-    } as React.CSSProperties,
-
+    },
     togglePanel: {
-      position: 'absolute',
+      position: 'absolute' as const,
       width: '50%',
       height: '100%',
       color: '#fff',
       display: 'flex',
-      flexDirection: 'column',
+      flexDirection: 'column' as const,
       justifyContent: 'center',
       alignItems: 'center',
       zIndex: 2,
       transition: '0.6s ease-in-out',
-    } as React.CSSProperties,
-
+    },
     toggleLeft: {
-      left: isActive ? '-50%' : '0',
-      transitionDelay: isActive ? '0.6s' : '1.2s',
-    } as React.CSSProperties,
-
+      left: isRegisterMode ? '-50%' : '0',
+      transitionDelay: isRegisterMode ? '0.6s' : '1.2s',
+    },
     toggleRight: {
-      right: isActive ? '0' : '-50%',
-      transitionDelay: isActive ? '1.2s' : '0.6s',
-    } as React.CSSProperties,
-
+      right: isRegisterMode ? '0' : '-50%',
+      transitionDelay: isRegisterMode ? '1.2s' : '0.6s',
+    },
     toggleBtn: {
       width: '160px',
       height: '46px',
       background: 'transparent',
       border: '2px solid #fff',
       borderRadius: '8px',
-      color: '#fff',
-      fontSize: '16px',
       cursor: 'pointer',
-      fontWeight: '600',
-      transition: 'all 0.3s ease',
-    } as React.CSSProperties,
-
-    toggleText: {
-      marginBottom: '20px',
-      fontSize: '14.5px',
-    } as React.CSSProperties,
-
-    errorMessage: {
-      color: '#ff4444',
-      background: 'rgba(255, 68, 68, 0.1)',
-      border: '1px solid rgba(255, 68, 68, 0.3)',
-      padding: '10px',
-      borderRadius: '6px',
-      marginBottom: '20px',
+      fontSize: '16px',
+      color: '#fff',
+      fontWeight: 600,
+      boxShadow: 'none',
+    },
+    error: {
+      color: '#ff4d4d',
+      marginBottom: '1rem',
       fontSize: '14px',
-      textAlign: 'center',
-    } as React.CSSProperties,
-
-    successMessage: {
-      color: '#00aa44',
-      background: 'rgba(0, 170, 68, 0.1)',
-      border: '1px solid rgba(0, 170, 68, 0.3)',
-      padding: '10px',
-      borderRadius: '6px',
-      marginBottom: '20px',
-      fontSize: '14px',
-      textAlign: 'center',
-    } as React.CSSProperties,
+    },
   };
 
   return (
-    <div style={styles.loginPage}>
+    <div style={styles.body}>
       <div style={styles.container}>
         {/* Login Form */}
         <div style={styles.formBox}>
           <div style={styles.form}>
-            <h1 style={styles.title}>Login</h1>
-
-            {loginError && <div style={styles.errorMessage}>{loginError}</div>}
-            {success && <div style={styles.successMessage}>{success}</div>}
-
+            <h1 style={styles.h1}>Login</h1>
+            {error && <p style={styles.error}>{error}</p>}
             <div style={styles.inputBox}>
               <input
                 type="text"
                 placeholder="Username"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
+                style={styles.input}
                 required
-                disabled={isLoading}
-                style={{
-                  ...styles.input,
-                  ...(isLoading ? styles.inputDisabled : {})
-                }}
-                onFocus={(e) => {
-                  e.target.style.background = '#f5f5f5';
-                  e.target.style.boxShadow = '0 0 5px rgba(116, 148, 236, 0.3)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.background = '#eee';
-                  e.target.style.boxShadow = 'none';
-                }}
               />
-              <span style={styles.icon}>👤</span>
+              <i style={styles.icon}>👤</i>
             </div>
-
             <div style={styles.inputBox}>
               <input
                 type="password"
                 placeholder="Password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                style={styles.input}
                 required
-                disabled={isLoading}
-                style={{
-                  ...styles.input,
-                  ...(isLoading ? styles.inputDisabled : {})
-                }}
-                onFocus={(e) => {
-                  e.target.style.background = '#f5f5f5';
-                  e.target.style.boxShadow = '0 0 5px rgba(116, 148, 236, 0.3)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.background = '#eee';
-                  e.target.style.boxShadow = 'none';
-                }}
               />
-              <span style={styles.icon}>🔒</span>
+              <i style={styles.icon}>🔒</i>
             </div>
-
             <div style={styles.forgotLink}>
-              <span
-                style={styles.forgotLinkA}
-                onClick={() => {
-                  console.log('Forgot password clicked');
-                  // Implement forgot password logic
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = '#7494ec';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = '#333';
-                }}
-              >
-                Forgot Password?
-              </span>
+              <span style={styles.forgotLinkA}>Forgot Password?</span>
             </div>
-
-            <button
-              type="button"
-              style={{
-                ...styles.btn,
-                ...(isLoading ? styles.btnDisabled : {})
-              }}
+            <button 
+              type="button" 
+              style={styles.btn}
               disabled={isLoading}
-              onClick={handleLoginSubmit}
-              onMouseEnter={(e) => {
-                if (!isLoading) {
-                  e.currentTarget.style.background = '#5c7cfa';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 4px 15px rgba(116, 148, 236, 0.4)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isLoading) {
-                  e.currentTarget.style.background = '#7494ec';
-                  e.currentTarget.style.transform = 'none';
-                  e.currentTarget.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
-                }
-              }}
+              onClick={handleSubmit}
             >
               {isLoading ? 'Logging in...' : 'Login'}
             </button>
-
-            <p style={styles.socialText}>or login with social platforms</p>
-
+            <p style={styles.p}>or login with social platforms</p>
             <div style={styles.socialIcons}>
-              <span
-                style={styles.socialIcon}
-                onClick={() => handleSocialLogin('google')}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#7494ec';
-                  e.currentTarget.style.color = '#7494ec';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#ccc';
-                  e.currentTarget.style.color = '#333';
-                  e.currentTarget.style.transform = 'none';
-                }}
-              >
-                G
-              </span>
-              <span
-                style={styles.socialIcon}
-                onClick={() => handleSocialLogin('facebook')}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#7494ec';
-                  e.currentTarget.style.color = '#7494ec';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#ccc';
-                  e.currentTarget.style.color = '#333';
-                  e.currentTarget.style.transform = 'none';
-                }}
-              >
-                f
-              </span>
-              <span
-                style={styles.socialIcon}
-                onClick={() => handleSocialLogin('github')}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#7494ec';
-                  e.currentTarget.style.color = '#7494ec';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#ccc';
-                  e.currentTarget.style.color = '#333';
-                  e.currentTarget.style.transform = 'none';
-                }}
-              >
-                ⚡
-              </span>
-              <span
-                style={styles.socialIcon}
-                onClick={() => handleSocialLogin('linkedin')}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#7494ec';
-                  e.currentTarget.style.color = '#7494ec';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#ccc';
-                  e.currentTarget.style.color = '#333';
-                  e.currentTarget.style.transform = 'none';
-                }}
-              >
-                in
-              </span>
+              <div style={styles.socialIcon}>G</div>
+              <div style={styles.socialIcon}>f</div>
+              <div style={styles.socialIcon}>📧</div>
+              <div style={styles.socialIcon}>💼</div>
             </div>
           </div>
         </div>
@@ -519,176 +284,53 @@ const Login: React.FC<LoginProps> = () => {
         {/* Register Form */}
         <div style={styles.registerBox}>
           <div style={styles.form}>
-            <h1 style={styles.title}>Registration</h1>
-
-            {registerError && <div style={styles.errorMessage}>{registerError}</div>}
-            {success && <div style={styles.successMessage}>{success}</div>}
-
+            <h1 style={styles.h1}>Registration</h1>
             <div style={styles.inputBox}>
               <input
                 type="text"
                 placeholder="Username"
-                value={registerUsername}
-                onChange={(e) => setRegisterUsername(e.target.value)}
+                value={regUsername}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setRegUsername(e.target.value)}
+                style={styles.input}
                 required
-                disabled={isRegisterLoading}
-                style={{
-                  ...styles.input,
-                  ...(isRegisterLoading ? styles.inputDisabled : {})
-                }}
-                onFocus={(e) => {
-                  e.target.style.background = '#f5f5f5';
-                  e.target.style.boxShadow = '0 0 5px rgba(116, 148, 236, 0.3)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.background = '#eee';
-                  e.target.style.boxShadow = 'none';
-                }}
               />
-              <span style={styles.icon}>👤</span>
+              <i style={styles.icon}>👤</i>
             </div>
-
             <div style={styles.inputBox}>
               <input
                 type="email"
                 placeholder="Email"
-                value={registerEmail}
-                onChange={(e) => setRegisterEmail(e.target.value)}
+                value={regEmail}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setRegEmail(e.target.value)}
+                style={styles.input}
                 required
-                disabled={isRegisterLoading}
-                style={{
-                  ...styles.input,
-                  ...(isRegisterLoading ? styles.inputDisabled : {})
-                }}
-                onFocus={(e) => {
-                  e.target.style.background = '#f5f5f5';
-                  e.target.style.boxShadow = '0 0 5px rgba(116, 148, 236, 0.3)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.background = '#eee';
-                  e.target.style.boxShadow = 'none';
-                }}
               />
-              <span style={styles.icon}>✉️</span>
+              <i style={styles.icon}>✉️</i>
             </div>
-
             <div style={styles.inputBox}>
               <input
                 type="password"
                 placeholder="Password"
-                value={registerPassword}
-                onChange={(e) => setRegisterPassword(e.target.value)}
+                value={regPassword}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setRegPassword(e.target.value)}
+                style={styles.input}
                 required
-                disabled={isRegisterLoading}
-                style={{
-                  ...styles.input,
-                  ...(isRegisterLoading ? styles.inputDisabled : {})
-                }}
-                onFocus={(e) => {
-                  e.target.style.background = '#f5f5f5';
-                  e.target.style.boxShadow = '0 0 5px rgba(116, 148, 236, 0.3)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.background = '#eee';
-                  e.target.style.boxShadow = 'none';
-                }}
               />
-              <span style={styles.icon}>🔒</span>
+              <i style={styles.icon}>🔒</i>
             </div>
-
-            <button
-              type="button"
-              style={{
-                ...styles.btn,
-                ...(isRegisterLoading ? styles.btnDisabled : {})
-              }}
-              disabled={isRegisterLoading}
+            <button 
+              type="button" 
+              style={styles.btn}
               onClick={handleRegisterSubmit}
-              onMouseEnter={(e) => {
-                if (!isRegisterLoading) {
-                  e.currentTarget.style.background = '#5c7cfa';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 4px 15px rgba(116, 148, 236, 0.4)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isRegisterLoading) {
-                  e.currentTarget.style.background = '#7494ec';
-                  e.currentTarget.style.transform = 'none';
-                  e.currentTarget.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
-                }
-              }}
             >
-              {isRegisterLoading ? 'Registering...' : 'Register'}
+              Register
             </button>
-
-            <p style={styles.socialText}>or register with social platforms</p>
-
+            <p style={styles.p}>or register with social platforms</p>
             <div style={styles.socialIcons}>
-              <span
-                style={styles.socialIcon}
-                onClick={() => handleSocialLogin('google')}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#7494ec';
-                  e.currentTarget.style.color = '#7494ec';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#ccc';
-                  e.currentTarget.style.color = '#333';
-                  e.currentTarget.style.transform = 'none';
-                }}
-              >
-                G
-              </span>
-              <span
-                style={styles.socialIcon}
-                onClick={() => handleSocialLogin('facebook')}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#7494ec';
-                  e.currentTarget.style.color = '#7494ec';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#ccc';
-                  e.currentTarget.style.color = '#333';
-                  e.currentTarget.style.transform = 'none';
-                }}
-              >
-                f
-              </span>
-              <span
-                style={styles.socialIcon}
-                onClick={() => handleSocialLogin('github')}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#7494ec';
-                  e.currentTarget.style.color = '#7494ec';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#ccc';
-                  e.currentTarget.style.color = '#333';
-                  e.currentTarget.style.transform = 'none';
-                }}
-              >
-                ⚡
-              </span>
-              <span
-                style={styles.socialIcon}
-                onClick={() => handleSocialLogin('linkedin')}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#7494ec';
-                  e.currentTarget.style.color = '#7494ec';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#ccc';
-                  e.currentTarget.style.color = '#333';
-                  e.currentTarget.style.transform = 'none';
-                }}
-              >
-                in
-              </span>
+              <div style={styles.socialIcon}>G</div>
+              <div style={styles.socialIcon}>f</div>
+              <div style={styles.socialIcon}>📧</div>
+              <div style={styles.socialIcon}>💼</div>
             </div>
           </div>
         </div>
@@ -696,37 +338,26 @@ const Login: React.FC<LoginProps> = () => {
         {/* Toggle Box */}
         <div style={styles.toggleBox}>
           <div style={styles.toggleBoxBefore}></div>
-
-          {/* Toggle Panels */}
-          <div style={{ ...styles.togglePanel, ...styles.toggleLeft }}>
-            <h1 style={styles.title}>Hello, Welcome!</h1>
-            <p style={styles.toggleText}>Don't have an account?</p>
-            <button
+          
+          {/* Toggle Left Panel */}
+          <div style={{...styles.togglePanel, ...styles.toggleLeft}}>
+            <h1 style={styles.h1}>Hello, Welcome!</h1>
+            <p style={{...styles.p, marginBottom: '20px'}}>Don't have an account?</p>
+            <button 
               style={styles.toggleBtn}
-              onClick={() => setIsActive(true)}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent';
-              }}
+              onClick={() => setIsRegisterMode(true)}
             >
               Register
             </button>
           </div>
 
-          <div style={{ ...styles.togglePanel, ...styles.toggleRight }}>
-            <h1 style={styles.title}>Welcome Back!</h1>
-            <p style={styles.toggleText}>Already have an account?</p>
-            <button
+          {/* Toggle Right Panel */}
+          <div style={{...styles.togglePanel, ...styles.toggleRight}}>
+            <h1 style={styles.h1}>Welcome Back!</h1>
+            <p style={{...styles.p, marginBottom: '20px'}}>Already have an account?</p>
+            <button 
               style={styles.toggleBtn}
-              onClick={() => setIsActive(false)}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent';
-              }}
+              onClick={() => setIsRegisterMode(false)}
             >
               Login
             </button>
@@ -737,4 +368,4 @@ const Login: React.FC<LoginProps> = () => {
   );
 };
 
-export default Login;
+export default LoginComponent;
