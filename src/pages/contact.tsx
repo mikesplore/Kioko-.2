@@ -85,7 +85,7 @@ const Contact = () => {
               </div>
               <div>
                 <h3 className="text-lg font-medium mb-1">Location</h3>
-                <p className="text-gray-600">iome Innovation Center<br />Mombasa, Kenya</p>
+                <p className="text-gray-600">Kioko Wines & Spirit Enterprises<br />Malindi County, Kenya</p>
               </div>
             </div>
             
@@ -97,7 +97,7 @@ const Contact = () => {
               </div>
               <div>
                 <h3 className="text-lg font-medium mb-1">Phone</h3>
-                <p className="text-gray-600">+254 700 123 456<br />+254 711 987 654</p>
+                <p className="text-gray-600">+254 798270585</p>
               </div>
             </div>
             
@@ -109,7 +109,7 @@ const Contact = () => {
               </div>
               <div>
                 <h3 className="text-lg font-medium mb-1">Email</h3>
-                <p className="text-gray-600">info@techskill.ac.ke<br />admissions@techskill.ac.ke</p>
+                <p className="text-gray-600">info@techskill.ac.ke</p>
               </div>
             </div>
           </div>
@@ -118,23 +118,23 @@ const Contact = () => {
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <div className="p-4 bg-gray-50 border-b">
               <h3 className="text-lg font-medium">Find Us Here</h3>
-              <p className="text-sm text-gray-600 mt-1">iome Innovation Center</p>
+              <p className="text-sm text-gray-600 mt-1">Kioko Wines & Spirit Enterprises</p>
             </div>
             <div className="h-64">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15951.234!2d39.6682!3d-4.0435!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x184012b6d3a43f5d%3A0x4a8c44d62b7e2ef2!2sMombasa%2C%20Kenya!5e0!3m2!1sen!2sus!4v1690000001000"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d997.6195775133557!2d40.11649027259283!3d-3.2109881744271096!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x18158fb24d36049d%3A0x2cf963bf25d74b20!2sKioko%20Wines%20%26%20Spirit%20Enterprises!5e0!3m2!1sen!2ske!4v1695740149183!5m2!1sen!2ske"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
                 allowFullScreen={true}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="TechSkill Academy Mombasa iome Innovation Location"
+                title="Kioko Wines & Spirit Enterprises Location"
               ></iframe>
             </div>
             <div className="p-3 bg-gray-50 text-center">
               <a
-                href="https://maps.google.com/?q=iome+Innovation+Center,+Mombasa,+Kenya"
+                href="https://maps.google.com/maps/place/Kioko+Wines+%26+Spirit+Enterprises/@-3.2109882,40.1164903,18z/data=!3m1!4b1!4m6!3m5!1s0x18158fb24d36049d:0x2cf963bf25d74b20!8m2!3d-3.2108973!4d40.1170891!16s%2Fg%2F1pzph82cq"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-800 text-sm font-medium"

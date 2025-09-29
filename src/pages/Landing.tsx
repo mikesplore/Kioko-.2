@@ -18,16 +18,8 @@ interface Product {
   sizeOptions?: SizeOption[];
 }
 
-interface CartItem {
-  productId: string;
-  selectedSize: number;
-  quantity: number;
-}
-
 export default function KiokoEnterpriseLandingPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [cart, setCart] = useState<{[key: string]: CartItem[]}>({});
-  const [notification, setNotification] = useState<string | null>(null);
 
   // Convert your featured products to match the cart system format
   const featuredProducts: Product[] = [
@@ -87,114 +79,7 @@ export default function KiokoEnterpriseLandingPage() {
     }
   ];
 
-  // Helper function to get default size options
-  const getDefaultSizeOptions = (basePrice: number): SizeOption[] => [
-    { ml: 250, price: basePrice * 0.7, label: '250ml' },
-    { ml: 500, price: basePrice, label: '500ml' },
-    { ml: 750, price: basePrice * 1.4, label: '750ml' },
-    { ml: 1000, price: basePrice * 1.8, label: '1L' }
-  ];
-
-  // Add to cart function
-  const addToCart = (productId: string, selectedSize: number = 500, quantity: number = 1) => {
-    setCart(prevCart => {
-      const newCart = { ...prevCart };
-      
-      if (!newCart[productId]) {
-        newCart[productId] = [];
-      }
-      
-      const existingItemIndex = newCart[productId].findIndex(item => item.selectedSize === selectedSize);
-      
-      if (existingItemIndex >= 0) {
-        // Update existing item quantity
-        newCart[productId][existingItemIndex].quantity += quantity;
-      } else {
-        // Add new item
-        newCart[productId].push({
-          productId,
-          selectedSize,
-          quantity
-        });
-      }
-      
-      return newCart;
-    });
-
-    // Show notification
-    const product = featuredProducts.find(p => p.id === productId);
-    if (product) {
-      setNotification(`${product.name} added to cart!`);
-      setTimeout(() => setNotification(null), 3000);
-    }
-  };
-
-  // Update quantity function
-  const updateQuantity = (productId: string, sizeML: number, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      removeFromCart(productId, sizeML);
-      return;
-    }
-    
-    setCart(prevCart => {
-      const newCart = { ...prevCart };
-      if (newCart[productId]) {
-        const itemIndex = newCart[productId].findIndex(item => item.selectedSize === sizeML);
-        if (itemIndex >= 0) {
-          newCart[productId][itemIndex].quantity = newQuantity;
-        }
-      }
-      return newCart;
-    });
-  };
-
-  // Remove from cart function
-  const removeFromCart = (productId: string, sizeML: number) => {
-    setCart(prevCart => {
-      const newCart = { ...prevCart };
-      if (newCart[productId]) {
-        newCart[productId] = newCart[productId].filter(item => item.selectedSize !== sizeML);
-        if (newCart[productId].length === 0) {
-          delete newCart[productId];
-        }
-      }
-      return newCart;
-    });
-  };
-
-  // Update size function
-  const updateSize = (productId: string, oldSizeML: number, newSizeML: number) => {
-    setCart(prevCart => {
-      const newCart = { ...prevCart };
-      if (newCart[productId]) {
-        const itemIndex = newCart[productId].findIndex(item => item.selectedSize === oldSizeML);
-        if (itemIndex >= 0) {
-          const quantity = newCart[productId][itemIndex].quantity;
-          // Remove old size
-          newCart[productId].splice(itemIndex, 1);
-          // Add new size
-          const existingNewSizeIndex = newCart[productId].findIndex(item => item.selectedSize === newSizeML);
-          if (existingNewSizeIndex >= 0) {
-            newCart[productId][existingNewSizeIndex].quantity += quantity;
-          } else {
-            newCart[productId].push({
-              productId,
-              selectedSize: newSizeML,
-              quantity
-            });
-          }
-        }
-      }
-      return newCart;
-    });
-  };
-
-  // Calculate cart total items
-  const getTotalCartItems = () => {
-    return Object.values(cart).reduce((total, items) => {
-      return total + items.reduce((sum, item) => sum + item.quantity, 0);
-    }, 0);
-  };
+  // Format price for display
 
   // Format price for display
   const formatPrice = (price: number) => {
@@ -220,7 +105,7 @@ export default function KiokoEnterpriseLandingPage() {
       title: "Faster Delivery: Makupa, Kilifi, Watamu",
       subtitle: "Express service in Mtwapa, Hindi, Garsen, Mpeketoni & Lamu",
       description: "Professional service you can trust across the coast",
-      cta: "Call 0700 245 245",
+      cta: "Call 0798270585",
       bgGradient: "from-purple-900 via-indigo-800 to-blue-800"
     }
   ];
@@ -234,19 +119,6 @@ export default function KiokoEnterpriseLandingPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Notification */}
-      {notification && (
-        <div className="fixed top-4 right-4 bg-emerald-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce">
-          {notification}
-        </div>
-      )}
-
-      {/* Cart Badge (optional - you can add this to your header) */}
-      {getTotalCartItems() > 0 && (
-        <div className="fixed top-4 left-4 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm z-50">
-          {getTotalCartItems()}
-        </div>
-      )}
 
       {/* Hero Section - Full Height */}
       <section className="relative h-screen overflow-hidden">
@@ -455,13 +327,6 @@ export default function KiokoEnterpriseLandingPage() {
                         </span>
                       </div>
                     </div>
-                    
-                    <button 
-                      onClick={() => addToCart(product.id)}
-                      className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3 rounded-xl hover:from-emerald-700 hover:to-teal-700 transition-all font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
-                    >
-                      Add to Cart
-                    </button>
                   </div>
                 </div>
               );
@@ -487,7 +352,7 @@ export default function KiokoEnterpriseLandingPage() {
             </button>
             <div className="flex items-center space-x-3 text-xl">
               <Phone className="w-6 h-6" />
-              <span className="font-bold">Call: 0700 245 245</span>
+              <span className="font-bold">Call: 0798270585</span>
             </div>
           </div>
         </div>

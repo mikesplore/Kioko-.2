@@ -9,24 +9,47 @@ import About from './pages/About';
 import Contact from './pages/contact';
 import LoginComponent from './pages/login';
 import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
 import DebugStyles from './components/DebugStyles';
 import TailwindTest from './components/TailwindTest';
 import { useState } from 'react';
 
 import './styles/App.css';
 
+interface SizeOption {
+  ml: number;
+  price: number;
+  label: string;
+}
+
 interface Product {
   id: string;
   name: string;
   category: string;
-  price: number; // Changed to number to store raw price
+  price: number;
   image: string;
   description: string;
-  formattedPrice?: string; // Optional formatted price display
+  formattedPrice?: string;
+  sizeOptions: SizeOption[];
 }
 
+interface CartItem {
+  quantity: number;
+  selectedSize: SizeOption;
+}
+
+// Helper function to generate size options based on base price
+const generateSizeOptions = (basePrice: number): SizeOption[] => {
+  return [
+    { ml: 375, price: Math.round(basePrice * 0.75), label: '375ml' },
+    { ml: 500, price: basePrice, label: '500ml' },
+    { ml: 750, price: Math.round(basePrice * 1.4), label: '750ml' },
+    { ml: 1000, price: Math.round(basePrice * 1.8), label: '1L' }
+  ];
+};
+
 function App() {
-  const [cart, setCart] = useState<{[key: string]: number}>({});
+  const [cart, setCart] = useState<{[key: string]: CartItem}>({}); // Updated cart state type
 
   // Currency formatting function for Kenyan Shillings
   const formatKES = (amount: number): string => {
@@ -41,15 +64,20 @@ function App() {
   };
 
   // Expanded products data with Kenya drinks (prices in Kenyan Shillings)
-  const products: Product[] = [
+  const baseProducts = [
     // WHISKY
     {
       id: '1',
       name: 'Johnnie Walker Black Label',
       category: 'whisky',
-      price: 4500, // Store as raw number
+      price: 4500,
       image: 'https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=300&h=300&fit=crop',
-      description: 'Premium Scotch whisky, aged 12 years with rich smoky flavor'
+      description: 'Premium Scotch whisky, aged 12 years with rich smoky flavor',
+      sizeOptions: [
+        { ml: 500, price: 4500, label: '500ml' },
+        { ml: 750, price: 6500, label: '750ml' },
+        { ml: 1000, price: 8500, label: '1L' }
+      ]
     },
     {
       id: '2',
@@ -479,10 +507,16 @@ function App() {
 
   // Cart functions
   const addToCart = (productId: string) => {
-    setCart(prev => ({
-      ...prev,
-      [productId]: (prev[productId] || 0) + 1
-    }));
+    const product = products.find(p => p.id === productId);
+    if (!product || !product.sizeOptions.length) return;
+    
+    setCart(prev => {
+      const defaultSize = product.sizeOptions[0]; // Use first size option as default
+      return {
+        ...prev,
+        [productId]: prev[productId] || { quantity: 1, selectedSize: defaultSize }
+      };
+    });
   };
 
   const removeFromCart = (productId: string) => {
@@ -493,25 +527,32 @@ function App() {
     });
   };
 
-  const updateCartQuantity = (productId: string, newQuantity: number) => {
+  const updateCartQuantity = (productId: string, newQuantity: number, size: SizeOption) => {
     if (newQuantity <= 0) {
       removeFromCart(productId);
       return;
     }
     setCart(prev => ({
       ...prev,
-      [productId]: newQuantity
+      [productId]: { quantity: newQuantity, selectedSize: size }
     }));
   };
 
   const getTotalCartItems = () => {
-    return Object.values(cart).reduce((sum, count) => sum + count, 0);
+    return Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
   };
 
-  // Add formatted prices to products
+  // Transform base products to include size options and formatted prices
+  const products: Product[] = baseProducts.map(product => ({
+    ...product,
+    sizeOptions: generateSizeOptions(product.price),
+    formattedPrice: formatKES(product.price)
+  }));
+
+  // Add formatted prices to products with size options
   const productsWithFormattedPrices = products.map(product => ({
     ...product,
-    formattedPrice: formatKES(product.price)
+    formattedPrice: formatKES(product.sizeOptions[0].price)
   }));
 
   return (
@@ -522,7 +563,12 @@ function App() {
           <Layout>
             <Routes>
               <Route path="/" element={<Landing />} />
-              <Route path="/shop" element={<Shop products={productsWithFormattedPrices} addToCart={addToCart} />} />
+              <Route path="/shop" element={
+                <Shop 
+                  products={productsWithFormattedPrices} 
+                  addToCart={addToCart}
+                />
+              } />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/login" element={<LoginComponent />} />
@@ -535,6 +581,7 @@ function App() {
                   removeFromCart={removeFromCart} 
                 />
               } />
+              <Route path="/checkout" element={<Checkout/>} />
               <Route path="/debug-styles" element={<DebugStyles />} />
               <Route path="/tailwind-test" element={<TailwindTest />} />
             </Routes>

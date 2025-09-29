@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
 
 
 interface Product {
@@ -22,7 +21,6 @@ interface ShopProps {
 const Shop: React.FC<ShopProps> = ({ products, addToCart }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
-const location = useLocation();
 const searchQuery = searchParams.get('search')
 
 
@@ -47,9 +45,14 @@ const searchQuery = searchParams.get('search')
     { name: 'Rum', value: 'rum' }
   ];
 
-  const filteredProducts = selectedCategory === 'all' 
-    ? products 
-    : products.filter(product => product.category === selectedCategory);
+  // Filter products based on both category and search query
+const filteredProducts = products
+  .filter(product => selectedCategory === 'all' || product.category === selectedCategory)
+  .filter(product => 
+    !searchQuery || 
+    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    product.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleAddToCart = (productId: string) => {
     addToCart(productId);
@@ -64,6 +67,34 @@ const searchQuery = searchParams.get('search')
         <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
           Your premium destination for fine spirits and beverages. Experience the finest collection of drinks from around the world.
         </p>
+      </div>
+
+      {/* Search Bar */}
+      <div className="mb-8">
+        <div className="max-w-md mx-auto">
+          <input
+            type="text"
+            placeholder="Search drinks..."
+            value={searchQuery || ''}
+            onChange={(e) => {
+              const search = e.target.value;
+              if (search) {
+                setSearchParams(prev => {
+                  const newParams = new URLSearchParams(prev);
+                  newParams.set('search', search);
+                  return newParams;
+                });
+              } else {
+                setSearchParams(prev => {
+                  const newParams = new URLSearchParams(prev);
+                  newParams.delete('search');
+                  return newParams;
+                });
+              }
+            }}
+            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+          />
+        </div>
       </div>
 
       {/* Category Filter */}
