@@ -132,6 +132,17 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemCount = 0 }) => {
             >
               Contact
             </Link>
+
+            <Link
+              to="/dashboard"
+              className={`px-3 py-2 text-sm font-medium transition-colors duration-200 ${
+                isActive('/dashboard')
+                  ? 'text-amber-600 border-b-2 border-amber-600'
+                  : 'text-gray-700 hover:text-amber-600'
+              }`}
+            >
+              Dashboard
+            </Link>
           </div>
 
           {/* Right side actions */}
@@ -222,6 +233,13 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemCount = 0 }) => {
                 className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-md transition-colors duration-200"
               >
                 Contact
+              </Link>
+              <Link
+                to="/dashboard"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-md transition-colors duration-200"
+              >
+                Dashboard
               </Link>
               <Link
                 to="/cart"

@@ -209,7 +209,7 @@ const AdminLTEStyles = () => (
     /* Responsive adjustments */
     @media (min-width: 768px) {
       .main-content {
-        margin-left: 230px;
+        margin-left: 0;
       }
     }
 
@@ -330,94 +330,6 @@ const AdminLTEStyles = () => (
       text-align: right;
     }
   `}</style>
-);
-
-// Navigation Component
-type NavigationProps = {
-  activeSection: string;
-  setActiveSection: (section: string) => void;
-};
-const Navigation = ({ activeSection, setActiveSection }: NavigationProps) => (
-  <div className="hidden md:block fixed left-0 top-0 bottom-0 w-56 sidebar z-50">
-    <div className="nav-header">MAIN NAVIGATION</div>
-    <div 
-      className={`nav-item ${activeSection === 'dashboard' ? 'active' : ''}`}
-      onClick={() => setActiveSection('dashboard')}
-    >
-      <BarChart2 size={16} className="inline mr-3" />
-      Dashboard
-    </div>
-    <div 
-      className={`nav-item ${activeSection === 'students' ? 'active' : ''}`}
-      onClick={() => setActiveSection('students')}
-    >
-      <Users size={16} className="inline mr-3" />
-      Students
-    </div>
-    <div className="nav-item">
-      <Book size={16} className="inline mr-3" />
-      Courses
-    </div>
-    <div className="nav-item">
-      <CreditCard size={16} className="inline mr-3" />
-      Payments
-    </div>
-    <div className="nav-item">
-      <CalendarDays size={16} className="inline mr-3" />
-      Events
-    </div>
-    <div className="nav-item">
-      <Settings size={16} className="inline mr-3" />
-      Settings
-    </div>
-  </div>
-);
-
-// Header Component
-const Header = ({ activeSection }: { activeSection: string }) => (
-  <>
-    <header className="bg-blue-600 text-white p-4 shadow-md main-content">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <div>
-              <h1 className="text-xl font-bold text-white">
-                {activeSection === 'dashboard' ? 'Dashboard' : 'Students Management'}
-              </h1>
-              <p className="text-sm text-blue-100">Welcome back, Admin</p>
-            </div>
-          </div>
-        </div>
-        <div className="flex space-x-3">
-          <button className="bg-white px-4 py-2 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">
-            <Settings size={16} className="inline mr-2" />
-            Settings
-          </button>
-          <button className="bg-blue-800 px-4 py-2 rounded text-sm text-white hover:bg-blue-900">
-            <BarChart2 size={16} className="inline mr-2" />
-            View Reports
-          </button>
-        </div>
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="search-box px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300"
-          />
-        </div>
-      </div>
-    </header>
-
-    <div className="breadcrumb-container main-content">
-      <div className="flex items-center text-sm">
-        <a href="#" className="text-blue-600 hover:underline">Home</a>
-        <span className="mx-2 text-gray-500">/</span>
-        <span className="text-gray-700">
-          {activeSection === 'dashboard' ? 'Dashboard' : 'Students'}
-        </span>
-      </div>
-    </div>
-  </>
 );
 
 // Modal Component
@@ -999,21 +911,47 @@ const DashboardPage = () => {
   );
 };
 
-// Main App Component
-const App = () => {
+// Main Dashboard Component - Simplified for integration
+const Dashboard = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
 
   return (
     <div className="relative min-h-screen" style={{ backgroundColor: '#ecf0f5' }}>
       <AdminLTEStyles />
-      <Navigation activeSection={activeSection} setActiveSection={setActiveSection} />
-      <Header activeSection={activeSection} />
       
-      <div className="main-content">
+      {/* Simple section switcher without sidebar */}
+      <div className="bg-white shadow-sm border-b border-gray-200 p-4 mb-6">
+        <div className="flex space-x-4">
+          <button
+            onClick={() => setActiveSection('dashboard')}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              activeSection === 'dashboard'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <BarChart2 size={16} className="inline mr-2" />
+            Dashboard
+          </button>
+          <button
+            onClick={() => setActiveSection('students')}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              activeSection === 'students'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <Users size={16} className="inline mr-2" />
+            Students
+          </button>
+        </div>
+      </div>
+      
+      <div className="px-6">
         {activeSection === 'dashboard' ? <DashboardPage /> : <StudentsPage />}
       </div>
     </div>
   );
 };
 
-export default App;
+export default Dashboard;

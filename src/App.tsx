@@ -10,6 +10,7 @@ import Contact from './pages/contact';
 import LoginComponent from './pages/login';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
+import Dashboard from './pages/Dashboard';
 import DebugStyles from './components/DebugStyles';
 import TailwindTest from './components/TailwindTest';
 import { useState } from 'react';
@@ -582,6 +583,7 @@ function App() {
                 />
               } />
               <Route path="/checkout" element={<Checkout/>} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/debug-styles" element={<DebugStyles />} />
               <Route path="/tailwind-test" element={<TailwindTest />} />
             </Routes>
